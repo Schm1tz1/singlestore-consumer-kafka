@@ -1,0 +1,16 @@
+---
+version: '3.5'
+services:
+  singlestore:
+    image:  memsql/cluster-in-a-box
+    hostname: singlestore
+    container_name: singlestore
+    ports:
+      - "8080:8080"
+      - "3306:3306" 
+    environment:
+      LICENSE_KEY: "BDY3MWY1YjBlODE5MTQ5MzFiN2U3YjE5MmIxZTA3MjE1AAAAAAAAAAAEAAAAAAAAAAwwNAIYCEGeOFLkBLpI/heNrajZSFMOCSk7070QAhgaIkGN1St1VNrSETEYU5FpyrKXI7uR3LoAAA=="
+      ROOT_PASSWORD: "root"
+      START_AFTER_INIT: "Y"
+    volumes:
+      - ./init.sql:/init.sql

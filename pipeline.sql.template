@@ -1,0 +1,20 @@
+USE test;
+DROP PIPELINE IF EXISTS test_kafka;
+DROP TABLE IF EXISTS test;
+CREATE TABLE test(registertime BIGINT, userid TEXT, regionid TEXT, gender TEXT);
+CREATE OR REPLACE PIPELINE test_kafka AS LOAD DATA KAFKA \"${CC_BOOTSTRAP}/test\"
+CONFIG '{\"security.protocol\": \"SASL_SSL\",
+\"sasl.mechanism\": \"PLAIN\",
+\"sasl.username\": \"${CC_API_KEY}\",
+\"ssl.ca.location\": \"/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem\",
+\"schema.registry.username\": \"${SR_API_KEY}\",
+\"schema.registry.ssl.ca.location\": \"/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem\"
+}'
+CREDENTIALS '{\"sasl.password\": \"${CC_API_SECRET}\",
+\"schema.registry.password\": \"${SR_API_SECRET}\"
+}'
+INTO TABLE test
+FORMAT AVRO
+SCHEMA REGISTRY \"${SR_BOOTSTRAP}\"
+(registertime <- registertime, userid <- userid, regionid <- regionid, gender <- gender);
+ALTER PIPELINE test_kafka SET OFFSETS EARLIEST;
